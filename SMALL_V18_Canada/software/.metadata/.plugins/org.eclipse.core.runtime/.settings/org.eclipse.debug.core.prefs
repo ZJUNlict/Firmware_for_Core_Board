@@ -1,0 +1,3 @@
+#Sun Nov 05 22:40:47 CST 2017
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\r\n<watchExpressions>\r\n<expression enabled\="true" text\="temp"/>\r\n<expression enabled\="true" text\="g_robot.num"/>\r\n</watchExpressions>\r\n
+eclipse.preferences.version=1

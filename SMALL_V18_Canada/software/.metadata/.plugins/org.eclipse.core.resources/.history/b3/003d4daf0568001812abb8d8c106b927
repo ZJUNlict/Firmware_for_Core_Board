@@ -1,0 +1,408 @@
+#include "Main.h"
+
+/*************** Globals ****************/
+int wheel_reduction_ratio_x_set=3;//3; /*减速比*/     // X.YZ
+int wheel_reduction_ratio_yz_set=18;//28; /*减速比*/   //X.YZ
+
+
+/************** system info ***************/
+robot_t g_robot;
+
+/************** Global Flag **************/
+extern char g_powermon_flag;
+//extern char heart_beat_flag;
+extern char g_updata_shooter_flag;
+extern char forcestop_counter;
+extern unsigned char offline_test_check_flag;
+//extern packet_type_t type;
+
+/*---------function headers----------*/
+void init_struct();
+void init_parameter();
+void init_motor();
+void init_other();
+void init_timer();
+void initialize();
+void is_comm_overflow();
+void do_run();
+void set_receive_mode();
+void set_shooter();
+void do_comm();
+void init_comm();
+int read_byte_9557();
+
+
+/*-----------------------------------------------------------------
+ *  函数名称： main
+ *  函数描述： 主函数，包含一个初始化，以及一个不会跳出的循环
+ *  
+ *
+ *
+ *  作者：     不详
+ *  修改日期： 2011-9-15
+ -----------------------------------------------------------------*/ 
+
+int main()
+{
+  initialize();
+  do_run();
+}
+
+/*-----------------------------------------------------------------
+ *  函数名称： initialize
+ *  函数描述： 各个部分的初始化
+ *  
+ *
+ *
+ *  作者：     不详
+ *  修改日期： 2011-9-15
+ -----------------------------------------------------------------*/ 
+void initialize()
+{
+    alt_irq_context context;
+    
+  	context =  alt_irq_disable_all ();		//关闭所有中断
+	beep_off(0);							//关闭报警铃声
+    init_struct();
+	init_motor();							//初始化电机的参数及电机初始速度设置为0
+  	init_pca9557();							//读取拨码盘的数值
+	init_other();							//初始化其余模块
+	init_comm();							//初始化通讯模块
+	init_led();								//初始化led灯
+	init_timer();							//初始化定时器
+	alt_irq_enable_all(context);			//开启所有中断
+}
+
+/*------------------------------------------------------------------------
+ *  函数名称： init_struct
+ *  函数描述： 为系统结构体g_system以及g_robot开辟一段空间
+ *  
+ *
+ *
+ *  作者：     不详
+ *  修改日期： 2011-9-15
+ -------------------------------------------------------------------------*/ 
+void init_struct()
+{
+	/* robot info initialize*/
+	memset( &g_robot, 0, sizeof( g_robot ) );
+}
+
+/*------------------------------------------------------------------------------
+ *  函数名称： init_parameter
+ *  函数描述： 现在是依靠宏定义对于电机的相关参数进行初始化，但是希望通过EEROM的
+ *             读写进行设置
+ *
+ *
+ *  作者：     不详
+ *  修改日期： 2011-9-15
+ ------------------------------------------------------------------------------*/ 
+void init_motor()			
+{ 
+	
+	IOWR_AVALONCONTROL_A(MOTOR_0_BASE, 360);
+	IOWR_AVALONCONTROL_B(MOTOR_0_BASE, 150);
+	IOWR_AVALONCONTROL_Z_OPENLOOP(MOTOR_0_BASE, 0);
+
+	IOWR_AVALONCONTROL_A(MOTOR_1_BASE, 360);
+	IOWR_AVALONCONTROL_B(MOTOR_1_BASE, 150);
+	IOWR_AVALONCONTROL_Z_OPENLOOP(MOTOR_1_BASE, 0);
+		        
+	IOWR_AVALONCONTROL_A(MOTOR_2_BASE, 360);
+	IOWR_AVALONCONTROL_B(MOTOR_2_BASE, 150);
+	IOWR_AVALONCONTROL_Z_OPENLOOP(MOTOR_2_BASE, 0);
+	        
+	IOWR_AVALONCONTROL_A(MOTOR_3_BASE, 360);
+	IOWR_AVALONCONTROL_B(MOTOR_3_BASE, 150);
+	IOWR_AVALONCONTROL_Z_OPENLOOP(MOTOR_3_BASE, 0);
+	
+    IOWR_AVALONCONTROL_A(MOTOR_4_BASE, 360);
+    IOWR_AVALONCONTROL_B(MOTOR_4_BASE, 150);
+    IOWR_AVALONCONTROL_Z_OPENLOOP(MOTOR_4_BASE, 0);
+    
+    IOWR_AVALONCONTROL_SET(MOTOR_0_BASE, 0);
+    IOWR_AVALONCONTROL_SET(MOTOR_1_BASE, 0);
+    IOWR_AVALONCONTROL_SET(MOTOR_2_BASE, 0);
+    IOWR_AVALONCONTROL_SET(MOTOR_3_BASE, 0);
+    IOWR_AVALONCONTROL_SET(MOTOR_4_BASE, 0);
+}
+
+/*-----------------------------------------------------------------
+ *  函数名称： init_other
+ *  函数描述： 初始化各个轮子的角度，控球模块，红外模块以及射门模块
+ *  
+ *
+ *
+ *  作者：     不详
+ *  修改日期： 2011-9-15
+ -----------------------------------------------------------------*/ 
+void init_other()
+{
+	int i = 0; 
+
+  	double wheel_angle[ 4 ] = { 
+		 D_WHEEL_ANGLE_FRONT,
+		-D_WHEEL_ANGLE_FRONT,
+		-D_WHEEL_ANGLE_BACK,
+		 D_WHEEL_ANGLE_BACK
+	};
+
+	/*------------------从轮子速度到码盘PID----------------------*/	
+	g_robot.kv2n = ( (double)wheel_reduction_ratio_x_set + (double)wheel_reduction_ratio_yz_set * 0.01 ) * ( 4 * ENCODER_COUNTS_PER_TURN_SET) / 2 / PI / WHEEL_RADIUS / DO_PID_FRQ;
+    
+	/*-------------------g_robot.kv2n=52.0573 当轮径视为0.028时--------------------*/
+    
+	for( i = 0; i < 4; i++ )
+	{
+		/*---------------trasnform wheel angle---------------------*/
+	    double angle = wheel_angle[ i ] / 180.0 * PI;
+
+	    g_robot.sin_angle[ i ] = sin( angle ) ;
+	    g_robot.cos_angle[ i ] = cos( angle ) ;
+	}
+    
+  	/*--------------------init IR detector----------------------*/
+  	IOWR(PWM_2_INFRA_PWM_BASE,0,0x0);   //start
+  	IOWR(PWM_2_INFRA_PWM_BASE,1,(CLKFREQ / INFRA_FREQ));   //period
+  	IOWR(PWM_2_INFRA_PWM_BASE,2,((CLKFREQ / INFRA_FREQ) * INFRA_DUTY));     //duty
+  	IOWR(PWM_2_INFRA_PWM_BASE,3,0x0);				//counter
+  	IOWR(PWM_2_INFRA_PWM_BASE,0,0x1); 
+
+  	init_shooter(); 
+}
+
+/*--------------------------------------------------------------------------
+ *  函数名称： init_timer
+ *  函数描述： 初始化定时器，将周期设定成为1ms，并为定时器注册中断
+ *  
+ *
+ *
+ *  作者：     不详
+ *  修改日期： 2011-9-15
+ ---------------------------------------------------------------------------*/ 
+void init_timer()
+{
+	unsigned long temp;
+  
+	temp = CLKFREQ / TICKFREQ; 					// calculate  the period 
+  	IOWR( TIMER_0_BASE, 1, 0x8); 				// stop the timer
+  	IOWR( TIMER_0_BASE, 0, 0); 					// clear the irq flag
+  
+  	//set the period reg
+  	IOWR( TIMER_0_BASE, 2, ( temp & 0xffff ) ); 
+  	IOWR( TIMER_0_BASE, 3, ( temp >> 16 ) );
+  
+  	// register the interrupt handler
+  	alt_irq_register( TIMER_0_IRQ, ( void * )0, do_timer ); 
+  
+  	// start the timer, continuously running.
+  	IOWR( TIMER_0_BASE, 1, 0x7 ); 
+}
+
+void robot_status_update(){
+    
+}
+
+/*-----------------------------------------------------------------
+ *  函数名称： do_run
+ *  函数描述： 进入主循环，根据模式选择拨码盘的不同，选择不同模式
+ *  
+ *
+ *
+ *  作者：     不详
+ *  修改日期： 2011-9-15
+ -----------------------------------------------------------------*/ 
+void do_run()
+{
+	int start_beep_flag = 1;
+    if (start_beep_flag)
+    {
+        int i;
+        if(g_robot.mode <= 3)   i = g_robot.mode + 1;
+        else if(g_robot.mode == 0xf)    i = 1;
+        else i = 0;
+        while(i != 0)
+        {
+                beep_on(0);
+                usleep(100000);
+                beep_off(0);
+                usleep(100000);
+                i--;
+        }
+        start_beep_flag = 0;
+    }
+    
+    if (g_robot.mode == NORMAL_MODE){
+    while(1){
+         do_comm();
+         robot_status_update();
+         if(g_is_shoot_in_main_loop){
+            do_shoot(g_is_shoot_in_main_loop);
+         }
+         if(g_is_chip_in_main_loop){
+            do_chip(g_is_chip_in_main_loop);
+         }
+         is_comm_overflow();
+         set_receive_mode();
+        if(g_powermon_flag)                         //对电池电压进行检测
+        {
+            g_powermon_flag = 0;
+            if(do_power_monitor()==2)
+                if(forcestop_counter>=LOWPOWERTIME)
+                {
+                    do_dribbler(0);
+                    do_acc_handle_move(0,0,0,10);
+                    usleep(16000);
+//                  do_shoot(0);
+//                  do_chip(0);
+                    while(!g_powermon_flag);
+                    continue;
+                }
+        }
+//         if(g_updata_shooter_flag){                   //对射门完成之后的延时进行计时
+//            update_shooter();
+//            g_updata_shooter_flag = 0;
+//         }
+    }
+    }
+    
+	while( 1 )
+	{
+//		if(heart_beat_flag==1)						//进行心跳灯的明暗切换
+//		{
+			heart_beat();
+//			heart_beat_flag=0;
+//		}
+		switch(g_robot.mode)
+		{
+			
+ 			case OFFLINE_TEST_MODE:
+				
+			{
+				unsigned char n_step,n_str;
+				static unsigned char shootflag = SHOOT_DELAY;
+				static unsigned char chipflag = SHOOT_DELAY;
+				int tempf,tempn;
+
+				if(offline_test_check_flag)
+				{
+					offline_test_check_flag = 0;
+						
+					tempf = (read_byte_9557(7, 0));  //frq,0 for start,1 for run,2 for drible,3 for shoot,4 for chip,5 for release power
+					if(tempf >= 0)
+			        {   
+			        	n_str=((~tempf) & 0x3c) >> 2;
+			        }
+			        else
+				    {
+				    	beep_on(0);usleep(100000);beep_off(0);usleep(100000);         //报错
+				    }
+
+					tempn = (read_byte_9557(0, 0));  //num
+					if(tempn >= 0)
+					{
+						n_step = ((~tempn) & 0x3c) >>2;
+					}
+					else
+					{
+					    beep_on(0);usleep(100000);beep_off(0);usleep(100000);         //报错
+		            }
+					
+					switch (n_step - OFFLINE_TEST_MODE)
+					{
+						case 0:
+
+							do_dribbler(0);
+				            do_chip(0);
+				            do_shoot(0);
+							do_acc_handle_move(0, 0, 0, 10);
+
+							break;
+
+						case 1:
+				            do_dribbler(0);
+				            do_chip(0);
+				            do_shoot(0);
+                            
+							if(n_str < 8)
+								do_acc_handle_move(n_str * 10, 0, 0, 10);
+							else
+								do_acc_handle_move((n_str - 16) * 10, 0, 0, 10);
+							break;
+
+						case 2:
+				            do_acc_handle_move(0, 0, 0, 10);
+				            do_chip(0);
+				            do_shoot(0);
+											
+				            do_dribbler(n_str);
+							break;
+
+						case 3:
+				            do_acc_handle_move(0, 0, 0, 10);
+				            do_dribbler(0);
+				            do_shoot(0);
+							
+							if(chipflag >= SHOOT_DELAY)
+							{
+								do_chip(n_str * 20);
+								chipflag = 0;
+							}
+							else
+								chipflag ++;
+							break;
+
+						case 4:
+							do_acc_handle_move(0, 0, 0, 10);
+				            do_dribbler(0);
+				            do_chip(0);
+
+							if(shootflag >= SHOOT_DELAY)
+							{
+								do_shoot(n_str * 20);
+								shootflag = 0;
+							}
+							else
+								shootflag ++;
+							break;
+							
+				 		case 5:
+				            do_acc_handle_move(0, 0, 0, 10);
+				            do_dribbler(0);
+				            do_chip(0);
+				                                                        
+				            if(shootflag >= SHOOT_DELAY)
+				            {
+								set_shooter(0,n_str * 20 );
+								shootflag = 0;
+				            }
+				            else
+				               shootflag ++;
+				            break;
+
+						default:
+
+							do_dribbler(0);
+                            do_chip(0);
+                            do_shoot(0);
+							do_acc_handle_move(0, 0, 0, 10);
+							break;
+                        
+					}
+				            
+				} 			
+			}
+			
+			break;
+		    default: 
+				while(1)
+                {                    
+                    beep_on(0);
+                    delay(1000000);
+                    beep_off(0);
+                    delay(1000000);
+                }
+			break;
+		}
+    }
+}

@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Tue May 22 20:45:37 2018
+Quartus II Version : 9.1 Build 222 10/21/2009 SJ Full Version
+Revision Name : SMALL_V14
+Top-level Entity Name : SMALL_V14
+Family : Cyclone III
+Total logic elements : 23,068
+    Total combinational functions : 17,747
+    Dedicated logic registers : 10,640
+Total registers : 10640
+Total pins : 131
+Total virtual pins : 0
+Total memory bits : 245,408
+Embedded Multiplier 9-bit elements : 80
+Total PLLs : 1

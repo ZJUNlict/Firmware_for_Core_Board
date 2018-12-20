@@ -1,0 +1,16 @@
+Fitter Status : Successful - Tue May 22 20:46:58 2018
+Quartus II Version : 9.1 Build 222 10/21/2009 SJ Full Version
+Revision Name : SMALL_V14
+Top-level Entity Name : SMALL_V14
+Family : Cyclone III
+Device : EP3C25Q240C8
+Timing Models : Final
+Total logic elements : 21,630 / 24,624 ( 88 % )
+    Total combinational functions : 17,759 / 24,624 ( 72 % )
+    Dedicated logic registers : 10,375 / 24,624 ( 42 % )
+Total registers : 10443
+Total pins : 131 / 149 ( 88 % )
+Total virtual pins : 0
+Total memory bits : 245,408 / 608,256 ( 40 % )
+Embedded Multiplier 9-bit elements : 80 / 132 ( 61 % )
+Total PLLs : 1 / 4 ( 25 % )

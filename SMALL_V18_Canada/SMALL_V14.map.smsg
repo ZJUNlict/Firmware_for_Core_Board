@@ -1,0 +1,11 @@
+Warning (10037): Verilog HDL or VHDL warning at cpu_0.v(1963): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at cpu_0.v(1965): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at cpu_0.v(2115): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at cpu_0.v(3013): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at epcs_flash_controller_0.v(401): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at sdram_0.v(313): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at sdram_0.v(323): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at sdram_0.v(333): conditional expression evaluates to a constant
+Warning (10037): Verilog HDL or VHDL warning at sdram_0.v(677): conditional expression evaluates to a constant
+Warning (10268): Verilog HDL information at hull_check.v(11): always construct contains both blocking and non-blocking assignments
+Warning (10268): Verilog HDL information at pi_ver_db.v(20): always construct contains both blocking and non-blocking assignments

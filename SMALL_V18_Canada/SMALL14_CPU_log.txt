@@ -1,0 +1,129 @@
+Altera SOPC Builder Version 9.10 Build 222
+Copyright (c) 1999-2009 Altera Corporation.  All rights reserved.
+
+
+No .sopc_builder configuration file(!)
+# 2018.05.22 15:38:13 (*) mk_custom_sdk starting
+# 2018.05.22 15:38:13 (*) Reading project C:/RoboCup_2018/SMALL_V18_Canada/SMALL14_CPU.ptf.
+
+# 2018.05.22 15:38:14 (*) Finding all CPUs
+# 2018.05.22 15:38:14 (*) Finding all available components
+# 2018.05.22 15:38:14 (*) Reading C:/RoboCup_2018/SMALL_V18_Canada/.sopc_builder/install.ptf
+
+# 2018.05.22 15:38:14 (*) Found 67 components
+
+# 2018.05.22 15:38:14 (*) Finding all peripherals
+
+# 2018.05.22 15:38:14 (*) Finding software components
+
+# 2018.05.22 15:38:15 (*) (Legacy SDK Generation Skipped)
+# 2018.05.22 15:38:15 (*) (All TCL Script Generation Skipped)
+# 2018.05.22 15:38:15 (*) (No Libraries Built)
+# 2018.05.22 15:38:15 (*) (Contents Generation Skipped)
+# 2018.05.22 15:38:15 (*) mk_custom_sdk finishing
+
+# 2018.05.22 15:38:15 (*) Starting generation for system: SMALL14_CPU.
+
+.
+.
+.
+.
+..
+.
+.....
+.........
+..
+
+# 2018.05.22 15:38:16 (*) Running Generator Program for cpu_0
+
+# 2018.05.22 15:38:18 (*) Starting Nios II generation
+# 2018.05.22 15:38:19 (*)   Checking for plaintext license.
+# 2018.05.22 15:38:19 (*)   Plaintext license not found.
+# 2018.05.22 15:38:19 (*)   Checking for encrypted license (non-evaluation).
+# 2018.05.22 15:38:20 (*)   Encrypted license found.  SOF will not be time-limited.
+# 2018.05.22 15:38:20 (*)   Getting CPU configuration settings
+# 2018.05.22 15:38:20 (*)   Elaborating CPU configuration settings
+# 2018.05.22 15:38:20 (*)   Creating all objects for CPU
+
+# 2018.05.22 15:38:20 (*)     Testbench
+# 2018.05.22 15:38:20 (*)     Instruction decoding
+# 2018.05.22 15:38:20 (*)       Instruction fields
+# 2018.05.22 15:38:20 (*)       Instruction decodes
+# 2018.05.22 15:38:21 (*)       Signals for RTL simulation waveforms
+# 2018.05.22 15:38:21 (*)       Instruction controls
+# 2018.05.22 15:38:21 (*)     Pipeline frontend
+# 2018.05.22 15:38:21 (*)     Pipeline backend
+# 2018.05.22 15:38:23 (*)   Generating HDL from CPU objects
+# 2018.05.22 15:38:25 (*)   Creating encrypted HDL
+
+# 2018.05.22 15:38:26 (*) Done Nios II generation
+
+# 2018.05.22 15:38:27 (*) Running Generator Program for jtag_uart_0
+
+# 2018.05.22 15:38:28 (*) Running Generator Program for sdram_0
+
+# 2018.05.22 15:38:29 (*) Running Generator Program for epcs_flash_controller_0
+
+# 2018.05.22 15:38:30 (*) Running Generator Program for timer_0
+
+# 2018.05.22 15:38:31 (*) Running Generator Program for timer_watchdog
+
+# 2018.05.22 15:38:32 (*) Running Generator Program for pio_buzzer
+
+# 2018.05.22 15:38:33 (*) Running Generator Program for pio_infra
+
+# 2018.05.22 15:38:34 (*) Running Generator Program for pio_led
+
+# 2018.05.22 15:38:35 (*) Running Generator Program for pio_nF2401_in
+
+# 2018.05.22 15:38:36 (*) Running Generator Program for pio_nF2401_inout
+
+# 2018.05.22 15:38:37 (*) Running Generator Program for pio_nF2401_out
+
+# 2018.05.22 15:38:38 (*) Running Generator Program for sysid
+
+# 2018.05.22 15:38:39 (*) Running Generator Program for pio_scl_24
+
+# 2018.05.22 15:38:39 (*) Running Generator Program for pio_sda_24
+
+# 2018.05.22 15:38:40 (*) Running Generator Program for pio_shoot_off
+
+# 2018.05.22 15:38:41 (*) Running Generator Program for pio_scl_9557
+
+# 2018.05.22 15:38:42 (*) Running Generator Program for pio_sda_9557
+
+# 2018.05.22 15:38:43 (*) Running Generator Program for pio_reset_9557
+
+# 2018.05.22 15:38:44 (*) Running Generator Program for pio_hull_fault1
+
+# 2018.05.22 15:38:45 (*) Running Generator Program for pio_hull_fault2
+
+# 2018.05.22 15:38:46 (*) Running Generator Program for pio_hull_fault3
+
+# 2018.05.22 15:38:47 (*) Running Generator Program for pio_hull_fault4
+
+.
+
+
+# 2018.05.22 15:38:48 (*) Running Test Generator Program for sdram_0
+
+# 2018.05.22 15:38:48 (*) Making arbitration and system (top) modules.
+
+# 2018.05.22 15:38:58 (*) Generating Quartus symbol for top level: SMALL14_CPU
+
+# 2018.05.22 15:38:58 (*) Symbol C:/RoboCup_2018/SMALL_V18_Canada/SMALL14_CPU.bsf already exists, no need to regenerate
+# 2018.05.22 15:38:58 (*) Creating command-line system-generation script: C:/RoboCup_2018/SMALL_V18_Canada/SMALL14_CPU_generation_script
+
+# 2018.05.22 15:38:58 (*) Running setup for HDL simulator: modelsim
+
+
+# 2018.05.22 15:38:58 (*) Completed generation for system: SMALL14_CPU.
+# 2018.05.22 15:38:58 (*) THE FOLLOWING SYSTEM ITEMS HAVE BEEN GENERATED:
+  SOPC Builder database : C:/RoboCup_2018/SMALL_V18_Canada/SMALL14_CPU.ptf 
+  System HDL Model : C:/RoboCup_2018/SMALL_V18_Canada/SMALL14_CPU.v 
+  System Generation Script : C:/RoboCup_2018/SMALL_V18_Canada/SMALL14_CPU_generation_script 
+
+# 2018.05.22 15:38:58 (*) SUCCESS: SYSTEM GENERATION COMPLETED.
+
+
+Press 'Exit' to exit.
